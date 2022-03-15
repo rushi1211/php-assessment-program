@@ -17,21 +17,33 @@
 									<h5 class="card-title mb-5"><strong>Lists of Plasma Requests</strong>&nbsp; <a href="addRequest"><button class="btn btn-primary"><i class="fa fa-plus"></i>
  										Add Requests</button></a></h5>
 										 <div>
-											<form action="">
+										 <form action="">
 												<div class="row">
-												<div class="col-md-3">
+												<!-- <div class="col-md-3">
 														<select class="form-control" name="searchby" required>
-															<option value="*">Select search by</option>
+															<option value="*">Select searchby </option>
 															<option value="state">Search By State</option>
 															<option value="blood_group">Search By Blood Group</option>
 
 														</select>
+													</div> -->
+													<div class="col-md-3">
+														<input class="form-control" id="myInput" name="blood_group" value="{{$blood_group}}" type="text" placeholder="enter blood group">
 													</div>
 													<div class="col-md-3">
-														<input class="form-control" id="myInput" name="search" value="{{$search}}" type="text" placeholder="Search..">
+														<!-- <input class="form-control" id="myInput" name="state" value="{{$stateInput}}" type="text" placeholder="enter state"> -->
+														<select  id="state-dd" name="state_id" class="form-control">
+															<option value="">Select State</option>
+															@foreach ($states as $state)
+															<option value="{{$state->state_id}}">
+																{{$state->sname}}
+															</option>
+															@endforeach
+														</select>
 													</div>
-													<div class="col-md-6">
-														<button class="btn btn-info" type="submit" name="submit">Search by Blood Group</button>
+													<div class="col-md-3">
+														<button class="btn btn-info" type="submit" name="submit">Search</button>
+														<a href="/requestsList" class="btn btn-warning">Show All</a>
 													</div>
 												</div>
 											</form>
@@ -56,6 +68,7 @@
 												<th colspan="2" class="d-xl-table-cell">Action</th>
 											</tr>
 										</thead>
+										@if($count != "")
 										<tbody id="myTable">
 										@foreach ($plasmarequests as $i => $plasmarequest)
 											<tr>
@@ -82,6 +95,13 @@
 											</tr>
 											@endforeach
 										</tbody>
+										@else
+											<tbody>
+												<tr>
+													<td colspan="11">No Record Found</td>	
+												<tr>
+											</tbody>
+										@endif			
 									</table>
 									<div class="row mt-10">
 										{{$plasmarequests->links()}}

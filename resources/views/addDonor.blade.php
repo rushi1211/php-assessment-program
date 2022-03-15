@@ -7,7 +7,7 @@
 								<div class="card-header">
 
 									<h3 class="">Add Plasma Donor Details</h3>
-                                    <div class="text-end"><a href="donorList"><button class="btn btn-danger"><i class="fa fa-arrow-left" aria-hidden="true"></i>
+                                    <div class="text-end"><a href="donorsList"><button class="btn btn-danger"><i class="fa fa-arrow-left" aria-hidden="true"></i>
                                     Back</button></a></div>
 								</div>
                                 <div class="card-body">

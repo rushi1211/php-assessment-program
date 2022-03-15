@@ -16,36 +16,77 @@ class DonorController extends Controller
 
     public function index(Request $request)
     {
-        $search = $request['search'] ?? "";
-        $searchby = $request['searchby'] ?? "";
-        if($search != "" && $searchby == "blood_group"){
-            //where
+        $blood_group = $request['blood_group'];
+        $stateInput = $request['state_id'];
+        if(($blood_group != "" && $stateInput != "")){
+            // $state = State::where('sname','LIKE','%'.$stateInput.'%')->get();
+            // $state_id = $state[0]->state_id;
             $donors = DB::table('donors')
             ->join('states','donors.state_id', '=', 'states.state_id')
             ->join('cities','donors.city_id', '=', 'cities.city_id')
             ->select('donors.id','donors.dname','donors.gender','donors.age','donors.blood_group','donors.positive_date','donors.negative_date','donors.phone','states.sname','cities.cname')
-            ->where('blood_group','LIKE',$search)->paginate();
+            ->where('blood_group','=',$blood_group)->where('donors.state_id',"=",$stateInput)->paginate(5);
+            
 
-        }elseif($search != "" && $searchby == "state"){
-                // dd($request['search']);
-                $state = State::where('sname','LIKE',$search)->get();
-                $state_id = $state[0]->state_id;
-                $donors = DB::table('donors')
-                ->join('states','donors.state_id', '=', 'states.state_id')
-                ->join('cities','donors.city_id', '=', 'cities.city_id')
-                ->select('donors.id','donors.dname','donors.gender','donors.age','donors.blood_group','donors.positive_date','donors.negative_date','donors.phone','states.sname','cities.cname')
-                ->where('donors.state_id','=', $state_id)->paginate();
-                // dd($plasmarequests);
-            }else{
+        }elseif($blood_group == "" && $stateInput !=""){
+            // $state = State::where('sname','LIKE','%'.$stateInput.'%')->get();
+            // $state_id = $state[0]->state_id;
             $donors = DB::table('donors')
-        ->join('states','donors.state_id', '=', 'states.state_id')
-        ->join('cities','donors.city_id', '=', 'cities.city_id')
-        ->select('donors.id','donors.dname','donors.gender','donors.age','donors.blood_group','donors.positive_date','donors.negative_date','donors.phone','states.sname','cities.cname')
-        ->orderBy('id','DESC')->paginate(10);
+            ->join('states','donors.state_id', '=', 'states.state_id')
+            ->join('cities','donors.city_id', '=', 'cities.city_id')
+            ->select('donors.id','donors.dname','donors.gender','donors.age','donors.blood_group','donors.positive_date','donors.negative_date','donors.phone','states.sname','cities.cname')
+            ->where('donors.state_id',"=",$stateInput)->paginate(5);
+
+        }elseif($blood_group != "" && $stateInput ==""){
+            // $state = State::where('sname','LIKE',$stateInput)->get();
+            // $state_id = $state[0]->state_id;
+            $donors = DB::table('donors')
+            ->join('states','donors.state_id', '=', 'states.state_id')
+            ->join('cities','donors.city_id', '=', 'cities.city_id')
+            ->select('donors.id','donors.dname','donors.gender','donors.age','donors.blood_group','donors.positive_date','donors.negative_date','donors.phone','states.sname','cities.cname')
+            ->where('blood_group',"=",$blood_group)->paginate(5);
+
+
+        }else{
+            $donors = DB::table('donors')
+            ->join('states','donors.state_id', '=', 'states.state_id')
+            ->join('cities','donors.city_id', '=', 'cities.city_id')
+            ->select('donors.id','donors.dname','donors.gender','donors.age','donors.blood_group','donors.positive_date','donors.negative_date','donors.phone','states.sname','cities.cname')
+            ->orderBy('id','DESC')->paginate(10);
         }
-    //    dd($data);
+
+        // $search = $request['search'] ?? "";
+        // $searchby = $request['searchby'] ?? "";
+        // if($search != "" && $searchby == "blood_group"){
+        //     //where
+        //     $donors = DB::table('donors')
+        //     ->join('states','donors.state_id', '=', 'states.state_id')
+        //     ->join('cities','donors.city_id', '=', 'cities.city_id')
+        //     ->select('donors.id','donors.dname','donors.gender','donors.age','donors.blood_group','donors.positive_date','donors.negative_date','donors.phone','states.sname','cities.cname')
+        //     ->where('blood_group','LIKE',$search)->paginate();
+
+        // }elseif($search != "" && $searchby == "state"){
+        //         // dd($request['search']);
+        //         $state = State::where('sname','LIKE',$search)->get();
+        //         $state_id = $state[0]->state_id;
+        //         $donors = DB::table('donors')
+        //         ->join('states','donors.state_id', '=', 'states.state_id')
+        //         ->join('cities','donors.city_id', '=', 'cities.city_id')
+        //         ->select('donors.id','donors.dname','donors.gender','donors.age','donors.blood_group','donors.positive_date','donors.negative_date','donors.phone','states.sname','cities.cname')
+        //         ->where('donors.state_id','=', $state_id)->paginate();
+        //         // dd($plasmarequests);
+        //     }else{
+        //     $donors = DB::table('donors')
+        // ->join('states','donors.state_id', '=', 'states.state_id')
+        // ->join('cities','donors.city_id', '=', 'cities.city_id')
+        // ->select('donors.id','donors.dname','donors.gender','donors.age','donors.blood_group','donors.positive_date','donors.negative_date','donors.phone','states.sname','cities.cname')
+        // ->orderBy('id','DESC')->paginate(10);
+        // }
+        $states = State::all();
+        
+       $count = count($donors);
     
-        return view('donorsList', compact('donors','search'));
+        return view('donorsList', compact('donors','states','count','stateInput','blood_group'));
     }
     
     /**
@@ -82,7 +123,7 @@ class DonorController extends Controller
             'negative_date'=> 'required',
             'state_id' => 'required',
             'city_id' => 'required',
-            'phone' => 'required|min:11|numeric',
+            'phone' => 'required|digits:10|numeric',
         ]);
         // dd($request->all());
         $Donors = Donor::create($request->all());

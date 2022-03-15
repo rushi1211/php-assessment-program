@@ -15,38 +15,77 @@ class RequestController extends Controller
      */
     public function index(Request $request)
     {
-        
-        $search = $request['search'] ?? "";
-        $searchby = $request['searchby'] ?? "";
-        // dd($searchby);
-        if($search != "" && $searchby == "blood_group"){
-            //where
-            $plasmarequests= DB::table('plasma_requests')
-            ->join('states','plasma_requests.state_id', '=', 'states.state_id')
-            ->join('cities','plasma_requests.city_id', '=', 'cities.city_id')
-            ->select('plasma_requests.id','plasma_requests.rname','plasma_requests.gender','plasma_requests.age','plasma_requests.blood_group','plasma_requests.positive_date','plasma_requests.negative_date','plasma_requests.phone','states.sname','cities.cname')
-            ->where('blood_group','LIKE',$search)->paginate();
-
-        }elseif($search != "" && $searchby == "state"){
-            // dd($request['search']);
-            $state = State::where('sname','LIKE',$search)->get();
-            $state_id = $state[0]->state_id;
+        $blood_group = $request['blood_group'];
+        $stateInput = $request['state_id'];
+        if(($blood_group != "" && $stateInput != "")){
+            // $state = State::where('sname','LIKE','%'.$stateInput.'%')->get();
+            // $state_id = $state[0]->state_id;
             $plasmarequests = DB::table('plasma_requests')
             ->join('states','plasma_requests.state_id', '=', 'states.state_id')
             ->join('cities','plasma_requests.city_id', '=', 'cities.city_id')
             ->select('plasma_requests.id','plasma_requests.rname','plasma_requests.gender','plasma_requests.age','plasma_requests.blood_group','plasma_requests.positive_date','plasma_requests.negative_date','plasma_requests.phone','states.sname','cities.cname')
-            ->where('plasma_requests.state_id','=', $state_id)->paginate();
-            // dd($plasmarequests);
+            ->where('blood_group','=',$blood_group)->where('plasma_requests.state_id',"=",$stateInput)->paginate(5);
+
+        }elseif($blood_group == "" && $stateInput !=""){
+            // $state = State::where('sname','LIKE','%'.$stateInput.'%')->get();
+            // $state_id = $state[0]->state_id;
+            $plasmarequests = DB::table('plasma_requests')
+            ->join('states','plasma_requests.state_id', '=', 'states.state_id')
+            ->join('cities','plasma_requests.city_id', '=', 'cities.city_id')
+            ->select('plasma_requests.id','plasma_requests.rname','plasma_requests.gender','plasma_requests.age','plasma_requests.blood_group','plasma_requests.positive_date','plasma_requests.negative_date','plasma_requests.phone','states.sname','cities.cname')
+            ->where('plasma_requests.state_id',"=",$stateInput)->paginate(5);
+
+        }elseif($blood_group != "" && $stateInput ==""){
+            // $state = State::where('sname','LIKE',$stateInput)->get();
+            // $state_id = $state[0]->state_id;
+            $plasmarequests = DB::table('plasma_requests')
+            ->join('states','plasma_requests.state_id', '=', 'states.state_id')
+            ->join('cities','plasma_requests.city_id', '=', 'cities.city_id')
+            ->select('plasma_requests.id','plasma_requests.rname','plasma_requests.gender','plasma_requests.age','plasma_requests.blood_group','plasma_requests.positive_date','plasma_requests.negative_date','plasma_requests.phone','states.sname','cities.cname')
+            ->where('blood_group',"=",$blood_group)->paginate(5);
+
+
         }else{
             $plasmarequests = DB::table('plasma_requests')
             ->join('states','plasma_requests.state_id', '=', 'states.state_id')
             ->join('cities','plasma_requests.city_id', '=', 'cities.city_id')
             ->select('plasma_requests.id','plasma_requests.rname','plasma_requests.gender','plasma_requests.age','plasma_requests.blood_group','plasma_requests.positive_date','plasma_requests.negative_date','plasma_requests.phone','states.sname','cities.cname')
-            ->orderBy('id', 'DESC')->paginate(10);
+            ->orderBy('id','DESC')->paginate(10);
         }
-    //    dd($data);
+
+        
+        // $search = $request['search'] ?? "";
+        // $searchby = $request['searchby'] ?? "";
+        // // dd($searchby);
+        // if($search != "" && $searchby == "blood_group"){
+        //     //where
+        //     $plasmarequests= DB::table('plasma_requests')
+        //     ->join('states','plasma_requests.state_id', '=', 'states.state_id')
+        //     ->join('cities','plasma_requests.city_id', '=', 'cities.city_id')
+        //     ->select('plasma_requests.id','plasma_requests.rname','plasma_requests.gender','plasma_requests.age','plasma_requests.blood_group','plasma_requests.positive_date','plasma_requests.negative_date','plasma_requests.phone','states.sname','cities.cname')
+        //     ->where('blood_group','LIKE',$search)->paginate();
+
+        // }elseif($search != "" && $searchby == "state"){
+        //     // dd($request['search']);
+        //     $state = State::where('sname','LIKE',$search)->get();
+        //     $state_id = $state[0]->state_id;
+        //     $plasmarequests = DB::table('plasma_requests')
+        //     ->join('states','plasma_requests.state_id', '=', 'states.state_id')
+        //     ->join('cities','plasma_requests.city_id', '=', 'cities.city_id')
+        //     ->select('plasma_requests.id','plasma_requests.rname','plasma_requests.gender','plasma_requests.age','plasma_requests.blood_group','plasma_requests.positive_date','plasma_requests.negative_date','plasma_requests.phone','states.sname','cities.cname')
+        //     ->where('plasma_requests.state_id','=', $state_id)->paginate();
+        //     // dd($plasmarequests);
+        // }else{
+        //     $plasmarequests = DB::table('plasma_requests')
+        //     ->join('states','plasma_requests.state_id', '=', 'states.state_id')
+        //     ->join('cities','plasma_requests.city_id', '=', 'cities.city_id')
+        //     ->select('plasma_requests.id','plasma_requests.rname','plasma_requests.gender','plasma_requests.age','plasma_requests.blood_group','plasma_requests.positive_date','plasma_requests.negative_date','plasma_requests.phone','states.sname','cities.cname')
+        //     ->orderBy('id', 'DESC')->paginate(10);
+        // }
+       $count = count($plasmarequests);
+       $states = State::all();
     
-        return view('requestsList', compact('plasmarequests','search'));
+        return view('requestsList', compact('plasmarequests','states','count','stateInput','blood_group'));
     }
 
     /**
@@ -82,7 +121,7 @@ class RequestController extends Controller
             'negative_date'=> 'required',
             'state_id' => 'required',
             'city_id' => 'required',
-            'phone' => 'required|min:11|numeric',
+            'phone' => 'required|digits:10|numeric',
         ]);
         // dd($request->all());
         $plasma = PlasmaRequest::create($request->all());

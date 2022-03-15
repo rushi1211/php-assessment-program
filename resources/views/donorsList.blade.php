@@ -20,19 +20,31 @@
 										 <div>
 											<form action="">
 												<div class="row">
-												<div class="col-md-3">
+												<!-- <div class="col-md-3">
 														<select class="form-control" name="searchby" required>
-															<option value="*">Select searcby </option>
+															<option value="*">Select searchby </option>
 															<option value="state">Search By State</option>
 															<option value="blood_group">Search By Blood Group</option>
 
 														</select>
+													</div> -->
+													<div class="col-md-3">
+														<input class="form-control" id="myInput" name="blood_group" value="{{$blood_group}}" type="text" placeholder="enter blood group">
 													</div>
 													<div class="col-md-3">
-														<input class="form-control" id="myInput" name="search" value="{{$search}}" type="text" placeholder="Search..">
+														<!-- <input class="form-control" id="myInput" name="state" value="{{$stateInput}}" type="text" placeholder="enter state"> -->
+														<select  id="state-dd" name="state_id" class="form-control">
+															<option value="">Select State</option>
+															@foreach ($states as $state)
+															<option value="{{$state->state_id}}">
+																{{$state->sname}}
+															</option>
+															@endforeach
+														</select>
 													</div>
-													<div class="col-md-6">
-														<button class="btn btn-info" type="submit" name="submit">Search by Blood Group</button>
+													<div class="col-md-3">
+														<button class="btn btn-info" type="submit" name="submit">Search</button>
+														<a href="/donorsList" class="btn btn-warning">Show All</a>
 													</div>
 												</div>
 											</form>
@@ -42,7 +54,7 @@
 									<table class="table table-striped table-responsive my-0" >
 										<thead>
 											<tr>
-												<th>Sr.No</th>
+												<th>Sr.No </th>
 												<th class=" d-xl-table-cell">Name</th>
 												<th class=" d-xl-table-cell">Gender</th>
 												<th class=" d-xl-table-cell">Age</th>
@@ -55,6 +67,8 @@
 												<th class="d-xl-table-cell" colspam="2">Action</th>
 											</tr>
 										</thead>
+										
+										@if($count !="")
 										<tbody>
 										@foreach ($donors as $i => $donor)
 											<tr>
@@ -79,7 +93,15 @@
 													</form>
 												</td>	
 											</tr>
-											@endforeach
+												@endforeach
+											
+										</tbody>
+										@else
+										<tbody>
+											<tr>
+												<td colspan="11">No Record Found</td>
+											</tr>
+											@endif
 										</tbody>
 									</table>
 									<div class="row mt-5">

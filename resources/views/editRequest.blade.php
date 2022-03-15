@@ -220,7 +220,7 @@
                     function myFunction() {
                         var x = document.getElementById("age").value;
                         if(x<18 || x>60){
-                            alert('Age musrt be in between 18 to 60 years');
+                            alert('Age must be in between 18 to 60 years');
                             document.getElementById("age").value =" ";
                         }
                     }
